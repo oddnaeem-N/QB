@@ -1,8 +1,95 @@
-<!DOCTYPE html><html lang="bn"><head><meta charset="UTF-8"><title>বাংলা কুইজ</title><meta name="viewport" content="width=device-width,initial-scale=1"><link href="https://fonts.googleapis.com/css2?family=Tiro+Bangla&display=swap" rel="stylesheet"><style>body{font-family:'Tiro Bangla',serif;background:linear-gradient(to right,#fceabb,#f8b500);margin:0;padding:20px}.quiz-container{max-width:600px;margin:auto;background:#fff;border-radius:10px;padding:20px;box-shadow:0 0 10px rgba(0,0,0,.2)}.question-mark{font-size:40px;color:#f39c12;text-align:center}.question{font-size:20px;color:#b30000;text-align:center;margin-bottom:20px}.option{background:#f1f1f1;padding:10px;margin:10px 0;border-radius:5px;cursor:pointer;transition:background .3s}.option:hover{background:#dff9fb}.selected{background:#ffeaa7}.btn{display:block;margin:20px auto 0;padding:10px 20px;background:#f39c12;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:16px}.btn:hover{background:#e67e22}.timer{text-align:center;font-size:18px;margin-bottom:10px;color:#2c3e50}</style></head><body><div class="quiz-container"><div class="question-mark">❓</div><div class="timer">সময় বাকি:<span id="time">60</span>সেকেন্ড</div><div class="question" id="question">লোড হচ্ছে...</div><div id="options"></div><button class="btn" onclick="nextQuestion()">পরবর্তী প্রশ্ন</button><button class="btn" onclick="submitQuiz()">সাবমিট</button></div><script>const quizData = [
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <title>বাংলা কুইজ</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Tiro Bangla font -->
+  <link href="https://fonts.googleapis.com/css2?family=Tiro+Bangla&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Tiro Bangla', serif;
+      background: linear-gradient(to right, #fceabb, #f8b500);
+      margin: 0;
+      padding: 20px;
+    }
+    .quiz-container {
+      max-width: 600px;
+      margin: auto;
+      background: #fff;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+    .question-mark {
+      font-size: 40px;
+      color: #f39c12;
+      text-align: center;
+    }
+    .question {
+      font-size: 20px;
+      color: #b30000;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .option {
+      background: #f1f1f1;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .option:hover {
+      background: #dff9fb;
+    }
+    .selected {
+      background: #ffeaa7;
+    }
+    .correct {
+      background: #d4edda !important; /* সবুজ */
+    }
+    .wrong {
+      background: #f8d7da !important; /* হালকা লাল */
+    }
+    .btn {
+      display: block;
+      margin: 20px auto 0;
+      padding: 10px 20px;
+      background: #f39c12;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .btn:hover {
+      background: #e67e22;
+    }
+    .timer {
+      text-align: center;
+      font-size: 18px;
+      margin-bottom: 10px;
+      color: #2c3e50;
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <div class="question-mark">❓</div>
+    <div class="timer">সময় বাকি: <span id="time">60</span> সেকেন্ড</div>
+    <div class="question" id="question">লোড হচ্ছে...</div>
+    <div id="options"></div>
+    <button class="btn" onclick="nextQuestion()">পরবর্তী প্রশ্ন</button>
+    <button class="btn" onclick="submitQuiz()">সাবমিট</button>
+  </div>
+
+  <script>
+    const quizData = [
       {
         question: "চর্যাপদ তিব্বতি ভাষায় অনুবাদ করেন কে?",
         options: ["মুনিদত্ত", "প্রবোধচন্দ্র বাগচী", "কীতিচন্দ্র", "হরপ্রসাদ শাস্ত্রী"],
-        correct: 2
+        correct: 1
       },
       {
         question: "বাংলা সাহিত্যের প্রথম মহিলা কবি কে?",
@@ -18,7 +105,6 @@
 
     let currentQuestion = 0;
     let answers = [];
-    let score = 0;
     let timeLeft = 60;
     let timer = setInterval(() => {
       document.getElementById("time").innerText = timeLeft;
@@ -61,24 +147,21 @@
 
     function submitQuiz() {
       clearInterval(timer);
-      score = 0;
       quizData.forEach((q, i) => {
-        if (answers[i] === q.correct) {
-          score += 1;
-        } else if (answers[i] !== undefined) {
-          score -= 0.25;
+        const options = document.querySelectorAll('#options .option');
+        if (i === currentQuestion) {
+          options.forEach((opt, index) => {
+            if (index === q.correct) {
+              opt.classList.add('correct');
+            } else if (answers[i] === index) {
+              opt.classList.add('wrong');
+            }
+          });
         }
       });
-
-      document.body.innerHTML = `
-        <div class="quiz-container">
-          <h2>🎉 রেজাল্ট সামারি</h2>
-          <p>মোট প্রশ্ন: ${quizData.length}</p>
-          <p>সঠিক উত্তর: ${answers.filter((a,i)=>a===quizData[i].correct).length}</p>
-          <p>ভুল উত্তর: ${answers.filter((a,i)=>a!==quizData[i].correct && a!==undefined).length}</p>
-          <p>ফাইনাল স্কোর: ${score}</p>
-        </div>
-      `;
     }
 
-    loadQuestion();</script></body></html>
+    loadQuestion();
+  </script>
+</body>
+</html>
